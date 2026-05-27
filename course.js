@@ -12,4 +12,5 @@ const courseSchema = new mongoose.Schema({
     }]
 });
 
-module.exports = mongoose.model('Course', courseSchema);
+// Yahan ye check zaroori hai
+module.exports = mongoose.models.Course || mongoose.model('Course', courseSchema);

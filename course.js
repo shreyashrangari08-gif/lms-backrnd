@@ -1,12 +1,6 @@
-const mongoose = require('mongoose');
-
-const courseSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    shortDesc: String,
-    longDesc: String,
-    imageUrl: String,
-    videoUrl: String, // YouTube Embed Link
-    source: String
-});
-
-module.exports = mongoose.models.Course || mongoose.model('Course', courseSchema);
+// courseSchema mein add karein
+content: {
+    videoUrl: String,
+    notes: String, // Yahan aap text/padhne ka material dal sakte ho
+    quizLink: String // Optional: Bahar se quiz link yahan dal sakte ho
+}

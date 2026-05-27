@@ -12,5 +12,5 @@ const courseSchema = new mongoose.Schema({
     }]
 });
 
-// Yahan ye check zaroori hai
+// Ye fix error ko rok dega
 module.exports = mongoose.models.Course || mongoose.model('Course', courseSchema);

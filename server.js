@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const User = require('./models/User'); // Ensure path is correct
-const Course = require('./course');    // Ensure path is correct
+const User = require('./user'); // Line 4 updated: './user' (small 'u' kyunki file name user.js hai)
+const Course = require('./course'); 
 
 const app = express();
 app.use(cors());
@@ -59,7 +59,7 @@ app.get('/courses', async (req, res) => {
     }
 });
 
-// NAYA ROUTE: Specific course ke liye
+// Specific course route for learning.html
 app.get('/course/:id', async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);

@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error('❌ DB Error: ', err));
 
 // ==========================================
-// 🟢 AUTH ROUTES (BILKUL SAME PEHLE JAISA)
+// 🟢 AUTH ROUTES
 // ==========================================
 app.post('/register', async (req, res) => {
     try {
@@ -42,7 +42,7 @@ app.post('/login', async (req, res) => {
 });
 
 // ==========================================
-// 🟢 COURSE ROUTES (KUCH BHI CHANGE NAHI KIYA)
+// 🟢 COURSE ROUTES
 // ==========================================
 app.post('/add-course', async (req, res) => {
     try {
@@ -83,7 +83,7 @@ app.get('/api/admin/dashboard-data', async (req, res) => {
         if (userEmail !== "shreyashrangari08@gmail.com") {
             return res.status(403).json({ 
                 success: false, 
-                message: "Access Denied: Sirf Shreyash hi is data ko dekh sakta hai!" 
+                message: "Access Denied" 
             });
         }
 
@@ -97,14 +97,9 @@ app.get('/api/admin/dashboard-data', async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: "Server error", 
-            error: error.message 
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
-// ==========================================
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

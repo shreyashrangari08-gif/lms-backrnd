@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const User = require('./user'); 
+const { GoogleGenerativeAI } = require("@google/generative-ai"); // AI Import
+require('dotenv').config();
+
+const User = require('./user');
 const Course = require('./course');
 
 const app = express();
@@ -13,9 +16,22 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ DB Error: ', err));
 
-// ==========================================
-// 🟢 AUTH ROUTES
-// ==========================================
+// --- AI Chatbot Logic ---
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+
+app.post('/chat', async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent(prompt);
+        res.json({ reply: result.response.text() });
+    } catch (error) {
+        console.error("AI Error:", error);
+        res.status(500).json({ reply: "AI abhi busy hai." });
+    }
+});
+
+// --- AUTH ROUTES ---
 app.post('/register', async (req, res) => {
     try {
         const { username, email } = req.body;
@@ -41,9 +57,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// ==========================================
-// 🟢 COURSE ROUTES
-// ==========================================
+// --- COURSE ROUTES ---
 app.post('/add-course', async (req, res) => {
     try {
         const newCourse = new Course(req.body);
@@ -63,43 +77,19 @@ app.get('/courses', async (req, res) => {
     }
 });
 
-app.get('/course/:id', async (req, res) => {
-    try {
-        const course = await Course.findById(req.params.id);
-        if (!course) return res.status(404).json({ message: 'Course not found' });
-        res.json(course);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// ==========================================
-// 🔒 🆕 NAYA ADMIN ROUTE 
-// ==========================================
+// --- ADMIN ROUTE ---
 app.get('/api/admin/dashboard-data', async (req, res) => {
     try {
         const userEmail = req.query.email;
-
-        if (userEmail !== "shreyashrangari08@gmail.com") {
-            return res.status(403).json({ 
-                success: false, 
-                message: "Access Denied" 
-            });
+        if (userEmail !== 'shreyashrangari08@gmail.com') {
+            return res.status(403).json({ success: false, message: "Access Denied" });
         }
-
-        const totalUsers = await User.countDocuments({}); 
-        const totalCertificates = await User.countDocuments({ certificateEarned: true }); 
-
-        res.status(200).json({
-            success: true,
-            totalUsers: totalUsers,
-            totalCertificates: totalCertificates || 0
-        });
-
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        const totalUsers = await User.countDocuments();
+        const totalCertificates = await User.countDocuments({ certificateEarned: true });
+        res.status(200).json({ success: true, totalUsers, totalCertificates });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(5000, () => console.log('🚀 Server running on port 5000'));

@@ -22,7 +22,8 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 app.post('/chat', async (req, res) => {
     try {
         const { prompt } = req.body;
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // LINE 25: Yahan 'gemini-1.5-flash' ki jagah 'gemini-pro' kar diya hai
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" }); 
         const result = await model.generateContent(prompt);
         res.json({ reply: result.response.text() });
     } catch (error) {
@@ -31,7 +32,7 @@ app.post('/chat', async (req, res) => {
     }
 });
 
-// --- AUTH & COURSE ROUTES (Purane Wale) ---
+// --- AUTH & COURSE ROUTES ---
 app.post('/register', async (req, res) => {
     try {
         const newUser = new User(req.body);
@@ -49,40 +50,13 @@ app.post('/login', async (req, res) => {
     } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-// --- ADMIN ROUTES (NEW UPDATED) ---
-
-// 1. Dashboard Stats
+// --- ADMIN ROUTES ---
 app.get('/api/admin/dashboard-data', async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
         const totalCertificates = await User.countDocuments({ certificateEarned: true });
         res.status(200).json({ totalUsers, totalCertificates });
     } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// 2. Weekly/Monthly Stats
-app.get('/api/admin/stats', async (req, res) => {
-    const { type } = req.query;
-    // Logic: Agar weekly hai to pichle 7 din ka data, monthly to 30 din ka
-    const days = type === 'weekly' ? 7 : 30;
-    const date = new Date();
-    date.setDate(date.getDate() - days);
-    
-    const count = await User.countDocuments({ createdAt: { $gte: date } });
-    res.json({ period: type, count: count });
-});
-
-// 3. CSV Download Feature
-app.get('/api/admin/download', async (req, res) => {
-    try {
-        const users = await User.find();
-        let csv = "Name,Email,Date\n";
-        users.forEach(u => csv += `${u.username},${u.email},${u.createdAt}\n`);
-        
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="users_data.csv"');
-        res.send(csv);
-    } catch (err) { res.status(500).send("Error"); }
 });
 
 app.listen(5000, () => console.log('🚀 Server running on port 5000'));

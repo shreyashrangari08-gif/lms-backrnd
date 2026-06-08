@@ -23,7 +23,7 @@ app.post('/chat', async (req, res) => {
     try {
         const { prompt } = req.body;
         // Line 25 updated with gemini-pro
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" }); 
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(prompt);
         res.json({ reply: result.response.text() });
     } catch (error) {

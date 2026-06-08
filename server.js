@@ -22,19 +22,19 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 app.post('/chat', async (req, res) => {
     try {
         const { prompt } = req.body;
-        // Gemini Flash model ka latest endpoint use kar rahe hain
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
+        // Sahi model endpoint jo error nahi dega
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(prompt);
         const response = await result.response;
         res.json({ reply: response.text() });
     } catch (error) {
-        console.error("AI Error Details:", error.message);
-        // Error ko catch karke client ko bhej rahe hain taaki aap submit kar sakein
+        console.error("AI Error:", error.message);
+        // Error milne par ye message return karega
         res.status(500).json({ reply: "AI Model load nahi ho pa raha. Error: " + error.message });
     }
 });
 
-// --- AUTH & OTHER ROUTES ---
+// --- AUTH ROUTES ---
 app.post('/register', async (req, res) => {
     try {
         const newUser = new User(req.body);

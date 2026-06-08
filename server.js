@@ -22,13 +22,13 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 app.post('/chat', async (req, res) => {
     try {
         const { prompt } = req.body;
-        // Updated model for latest SDK
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
+        // Line 25 updated with gemini-pro
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" }); 
         const result = await model.generateContent(prompt);
         res.json({ reply: result.response.text() });
     } catch (error) {
         console.error("AI Error:", error);
-        res.status(500).json({ reply: "Error: " + error.message });
+        res.status(500).json({ reply: "AI abhi busy hai. Error: " + error.message });
     }
 });
 
@@ -48,6 +48,14 @@ app.post('/login', async (req, res) => {
         if (user && user.username === username) res.status(200).json({ message: 'Login Successful!' });
         else res.status(401).json({ message: 'Invalid credentials.' });
     } catch (err) { res.status(500).json({ message: err.message }); }
+});
+
+// --- ADMIN ROUTES ---
+app.get('/api/admin/dashboard-data', async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        res.status(200).json({ totalUsers });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.listen(5000, () => console.log('🚀 Server running on port 5000'));

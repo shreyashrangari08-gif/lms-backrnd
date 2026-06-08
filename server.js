@@ -22,17 +22,17 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 app.post('/chat', async (req, res) => {
     try {
         const { prompt } = req.body;
-        // LINE 25: Yahan 'gemini-1.5-flash' ki jagah 'gemini-pro' kar diya hai
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" }); 
+        // Updated model name
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
         const result = await model.generateContent(prompt);
         res.json({ reply: result.response.text() });
     } catch (error) {
         console.error("AI Error:", error);
-        res.status(500).json({ reply: "AI abhi busy hai." });
+        res.status(500).json({ reply: "AI abhi busy hai. Error: " + error.message });
     }
 });
 
-// --- AUTH & COURSE ROUTES ---
+// --- AUTH & OTHER ROUTES ---
 app.post('/register', async (req, res) => {
     try {
         const newUser = new User(req.body);
@@ -48,15 +48,6 @@ app.post('/login', async (req, res) => {
         if (user && user.username === username) res.status(200).json({ message: 'Login Successful!' });
         else res.status(401).json({ message: 'Invalid credentials.' });
     } catch (err) { res.status(500).json({ message: err.message }); }
-});
-
-// --- ADMIN ROUTES ---
-app.get('/api/admin/dashboard-data', async (req, res) => {
-    try {
-        const totalUsers = await User.countDocuments();
-        const totalCertificates = await User.countDocuments({ certificateEarned: true });
-        res.status(200).json({ totalUsers, totalCertificates });
-    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.listen(5000, () => console.log('🚀 Server running on port 5000'));

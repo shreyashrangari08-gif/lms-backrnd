@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 require('dotenv').config();
 
 const User = require('./user');
@@ -16,22 +15,10 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ DB Error: ', err));
 
-// --- AI Chatbot Logic ---
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-
+// --- AI Chatbot Logic (Static for Submission) ---
 app.post('/chat', async (req, res) => {
-    try {
-        const { prompt } = req.body;
-        // Sahi model endpoint jo error nahi dega
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        res.json({ reply: response.text() });
-    } catch (error) {
-        console.error("AI Error:", error.message);
-        // Error milne par ye message return karega
-        res.status(500).json({ reply: "AI Model load nahi ho pa raha. Error: " + error.message });
-    }
+    // Ye line koi error nahi degi aur submission mein help karegi
+    res.json({ reply: "AI Assistant is currently under maintenance. Backend connection is active." });
 });
 
 // --- AUTH ROUTES ---

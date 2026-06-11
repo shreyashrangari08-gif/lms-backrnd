@@ -7,4 +7,4 @@ const userSchema = new mongoose.Schema({
     courseProgress: { type: Number, default: 0 }           // Naya field
 }, { timestamps: true }); // Yeh line important hai - ye apne aap 'createdAt' date add karegi
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);

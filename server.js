@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const User = require('./user');
 const Course = require('./course');
-const adminRoute = require('./adminroute'); // Admin route import kiya
+const adminroute = require('./adminroute'); // Admin route import kiya
 
 const app = express();
 app.use(cors());

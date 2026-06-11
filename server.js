@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const User = require('./user');
 const Course = require('./course');
+const adminRoute = require('./adminroute'); // Admin route import kiya
 
 const app = express();
 app.use(cors());
@@ -15,13 +16,10 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ DB Error: ', err));
 
-// --- AI Chatbot Logic (Static for Submission) ---
-app.post('/chat', async (req, res) => {
-    // Ye line koi error nahi degi aur submission mein help karegi
-    res.json({ reply: "AI Assistant is currently under maintenance. Backend connection is active." });
-});
+// Mount Admin Routes at /api/admin
+app.use('/api/admin', adminRoute);
 
-// --- AUTH ROUTES ---
+// --- Auth Routes ---
 app.post('/register', async (req, res) => {
     try {
         const newUser = new User(req.body);
@@ -39,4 +37,5 @@ app.post('/login', async (req, res) => {
     } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-app.listen(5000, () => console.log('🚀 Server running on port 5000'));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

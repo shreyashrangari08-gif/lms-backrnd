@@ -13,7 +13,7 @@ const CourseSchema = new mongoose.Schema({
     videoUrl: String
 });
 
-const User = mongoose.model('User', UserSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);
 const Course = mongoose.model('Course', CourseSchema);
 
 module.exports = { User, Course };

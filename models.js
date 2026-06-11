@@ -13,8 +13,8 @@ const CourseSchema = new mongoose.Schema({
     videoUrl: String
 });
 
-module.exports = mongoose.models.User || mongoose.model('User', userSchema);
-const Course = mongoose.model('Course', CourseSchema);
+// Models prevent overwrite error
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
+const Course = mongoose.models.Course || mongoose.model('Course', CourseSchema);
 
 module.exports = { User, Course };
-

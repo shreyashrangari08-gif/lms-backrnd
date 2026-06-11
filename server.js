@@ -1,41 +1,45 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config(); // Env variables secure rakhne ke liye
 
-const User = require('./user');
-const Course = require('./course');
-const adminRoute = require('./adminroute'); // Admin route import kiya
+const adminRoute = require('./adminroute'); 
 
 const app = express();
-app.use(cors());
+
+// --- CRITICAL FIX: CORS Configuration ---
+// Yeh ensure karta hai ki aapka Vercel frontend, Render backend ko hit kar paye
+app.use(cors({
+    origin: '*', // Aap chahein toh '*' ki jagah apni Vercel app ka exact URL daal sakte hain safety ke liye
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ Connected to MongoDB'))
-    .catch(err => console.error('❌ DB Error: ', err));
+// --- MONGODB CONNECTION ---
+// (Apna MongoDB URL yahan properly configured hona chahiye env ya hardcoded)
+const mongoURI = process.env.MONGO_URI || "mongodb+srv://..."; 
 
-// Mount Admin Routes at /api/admin
-app.use('/api/admin', adminRoute);
+mongoose.connect(mongoURI)
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// --- Auth Routes ---
-app.post('/register', async (req, res) => {
-    try {
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.status(200).json({ message: 'Registration Successful!' });
-    } catch (err) { res.status(500).json({ message: err.message }); }
+// --- ROUTES ---
+app.use('/admin', adminRoute); 
+
+app.get('/', (req, res) => {
+    res.send('🚀 LMS Backend Server is Live and Running!');
 });
 
-app.post('/login', async (req, res) => {
-    try {
-        const { username, email } = req.body;
-        const user = await User.findOne({ email });
-        if (user && user.username === username) res.status(200).json({ message: 'Login Successful!' });
-        else res.status(401).json({ message: 'Invalid credentials.' });
-    } catch (err) { res.status(500).json({ message: err.message }); }
+// --- GLOBAL ERROR HANDLER ---
+app.use((err, req, res, next) => {
+    console.error("🔥 Server Error Stack:", err.stack);
+    res.status(500).json({ message: 'Something went wrong on the server!' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+    console.log(`🎧 Server running on port ${PORT}`);
+});
